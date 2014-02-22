@@ -1,36 +1,29 @@
-var express = require('express')
 var mongoose = require('mongoose');
-mongoose.connect('mongodb://localhost/test')
-
+var express = require('express');
 var app = express();
 
-app.configure(function(){
-	app.use(express.bodyParser());
-	app.use(function(req, res, next){
-		res.setHeader('Access-Control-Allow-Origin', '*');
-		res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST');
-		res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-with, Content-Type, Accept');
-		next();
-	})
+mongoose.connect('mongodb://localhost/test')
+var db = mongoose.connection;
+
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function callback () {
+  console.log('connection success');
 });
 
-app.get('/', function(req, res) {
-	res.type('application/json');
-	res.send(JSON.stringify(messages));
-});
+var mammalSchema = new mongoose.Schema(
+	{ 
+		name: 'string', 
+		type: 'string',
+		year_extinct: Number 
+	}
+);
 
-app.post('/', function(req, res) {
-	messages.push(req.body);
-	res.send(req.body);
-});
+var extinctMammal = mongoose.model('extinctMammal', mammalSchema);
 
-app.listen(12200);
+app.use(express.bodyParser());
 
-var Mammal = mongoose.model('Mammal', new mongoose.schema ({
-	name: String,
-	type: String,
-	year_extinct: Number
-}))
+app.listen(8888);
+
 
 
 
